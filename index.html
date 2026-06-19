@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aventuras no Simple Past</title>
+    <title>Aventuras no Simple Past - Versão Estendida</title>
     <style>
         :root {
             --primary: #4A90E2;
@@ -23,7 +23,7 @@
         }
         #game-container {
             width: 800px;
-            height: 500px;
+            height: 550px;
             background: var(--box-bg);
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
@@ -97,24 +97,55 @@
             flex-direction: column;
             gap: 10px;
             margin-top: 20px;
-            width: 80%;
+            width: 90%;
         }
         .option-btn {
             background: var(--primary);
             color: white;
             border: none;
-            padding: 15px;
+            padding: 12px;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 15px;
             cursor: pointer;
             transition: 0.2s;
+            text-align: left;
         }
         .option-btn:hover { background: #357ABD; }
         .score-display {
             font-size: 1.5em;
             font-weight: bold;
             color: #27ae60;
+            margin-bottom: 5px;
         }
+
+        /* Área de Envio de Resultado */
+        .send-results {
+            background: #f9f9f9;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            text-align: center;
+        }
+        .input-field {
+            padding: 10px;
+            width: 80%;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+        .social-btn {
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 0 5px;
+        }
+        .btn-wa { background: #25D366; }
+        .btn-email { background: #D44638; }
     </style>
 </head>
 <body>
@@ -125,41 +156,56 @@
         <img id="char-image" class="character-img" src="Batata.png" alt="Personagem">
         <div class="dialogue-box">
             <div id="speaker" class="speaker-name">Batata</div>
-            <div id="dialogue-text">Olá! Vamos aprender sobre o Simple Past?</div>
+            <div id="dialogue-text">Olá! Vamos revisar a matéria? O Simple Past indica ações que começaram e terminaram no passado.</div>
             <button class="next-btn" onclick="nextDialogue()">Próximo ></button>
         </div>
     </div>
 
     <!-- Tela do Quiz -->
     <div id="quiz-screen" class="screen">
-        <h2 id="question-text">Pergunta vai aqui</h2>
+        <div style="display: flex; justify-content: space-between; font-weight: bold; color: var(--primary); margin-bottom: 10px;">
+            <span id="question-counter">Questão 1 de 20</span>
+            <span>Pontos: <span id="current-score">0</span></span>
+        </div>
+        <h2 id="question-text" style="font-size: 1.2em;">Pergunta vai aqui</h2>
         <div class="options-container" id="options">
             <!-- Botões gerados via JS -->
         </div>
     </div>
 
     <!-- Tela de Resultado -->
-    <div id="result-screen" class="screen">
-        <h2>Revisão Concluída!</h2>
-        <img src="Yuyu.png" style="height: 200px; margin: 0 auto;">
-        <p class="score-display" id="final-score">Sua pontuação: 0/0</p>
-        <button class="option-btn" style="margin-top:20px; width:50%; align-self:center;" onclick="location.reload()">Jogar Novamente</button>
+    <div id="result-screen" class="screen" style="overflow-y: auto;">
+        <h2 style="text-align: center; margin: 0;">Revisão Concluída!</h2>
+        <img src="Yuyu.png" style="height: 120px; margin: 10px auto; display: block;">
+        <p class="score-display" id="final-score" style="text-align: center;">Sua pontuação: 0/20</p>
+        
+        <div class="send-results">
+            <h3 style="margin: 0 0 10px 0;">Enviar Resultado ao Professor</h3>
+            <p style="font-size: 13px; margin-bottom: 10px;">Insira o número de WhatsApp (com DDD) ou E-mail para enviar sua nota:</p>
+            <input type="text" id="contact-info" class="input-field" placeholder="Ex: 11999999999 ou professor@escola.com">
+            
+            <div>
+                <button class="social-btn btn-wa" onclick="sendWhatsApp()">Enviar por WhatsApp</button>
+                <button class="social-btn btn-email" onclick="sendEmail()">Enviar por E-mail</button>
+            </div>
+        </div>
+
+        <button class="option-btn" style="margin-top:15px; width:50%; align-self:center; text-align: center;" onclick="location.reload()">Jogar Novamente</button>
     </div>
 </div>
 
 <script>
-    // --- PARTE 1: TEORIA (Baseada nas Fontes) ---
+    // --- PARTE 1: TEORIA ---
     const dialogues = [
-        { char: "Batata.png", name: "Batata", text: "Olá! O Simple Past é usado para acontecimentos passados, ou seja, ações que começaram e terminaram no passado." },
-        { char: "Batata.png", name: "Batata", text: "Antes de ir para as ações, lembre-se do verbo 'to be'. No presente ele é am/is/are, mas no passado ele vira apenas 'was' (I, he, she, it) ou 'were' (you, we, they)." },
-        { char: "Doci.png", name: "Doci", text: "Agora, sobre os verbos de ação regulares! Eles são chamados assim porque seguem um padrão fixo de escrita no passado." },
-        { char: "Doci.png", name: "Doci", text: "A regra geral é acrescentar '-ed' no final. Por exemplo, 'to watch' vira 'watched'. Se já terminar em 'e', basta colocar o '-d', como em 'loved'." },
-        { char: "Doci.png", name: "Doci", text: "Atenção ao 'y'! Se tiver uma consoante antes, trocamos o 'y' por '-ied' (study -> studied). Se for vogal antes, fica só '-ed' (play -> played)." },
-        { char: "Doci.png", name: "Doci", text: "E os verbos curtos (C-V-C)? Se o verbo terminar em Consoante-Vogal-Consoante, dobramos a última letra! 'stop' vira 'stopped'. Exceto se terminar em 'x', aí não dobra ('fixed')." },
-        { char: "Kode.png", name: "Kode", text: "Quack! Mas e os irregulares? Eles não têm padrão estrutural! Podem mudar de forma inteiramente ('go' -> 'went')." },
-        { char: "Kode.png", name: "Kode", text: "Alguns não mudam absolutamente nada, como 'cut' ou 'put', que ficam iguais no presente e no passado. E 'read' escreve igual, mas a pronúncia muda de /rid/ para /réd/!" },
-        { char: "Yuyu.png", name: "Yuyu", text: "Miau! A regra de ouro: no passado, a forma do verbo é a MESMA para todas as pessoas (I, You, He, We, They usam todos a mesma forma)!" },
-        { char: "Yuyu.png", name: "Yuyu", text: "Por isso, em inglês, você NUNCA pode ocultar o sujeito. Se falar apenas 'did the homework', ninguém sabe quem fez. Sempre use o sujeito! Vamos praticar?" }
+        { char: "Batata.png", name: "Batata", text: "Olá! Vamos revisar a matéria? O Simple Past indica ações que começaram e terminaram no passado." },
+        { char: "Batata.png", name: "Batata", text: "Lembre-se do verbo 'to be'. No presente ele é am/is/are, mas no passado vira 'was' (I, he, she, it) ou 'were' (you, we, they)." },
+        { char: "Doci.png", name: "Doci", text: "Para verbos regulares, a regra geral é acrescentar '-ed'. 'watch' vira 'watched'. Se já terminar em 'e', basta o '-d' ('loved')." },
+        { char: "Doci.png", name: "Doci", text: "Se terminar em consoante + y, trocamos o 'y' por '-ied' (study -> studied). Se for vogal + y, apenas '-ed' (play -> played)." },
+        { char: "Doci.png", name: "Doci", text: "C-V-C (Consoante-Vogal-Consoante): dobramos a última letra! 'stop' vira 'stopped'. Exceções: terminados em 'x' ('fixed') e paroxítonas ('listened')." },
+        { char: "Kode.png", name: "Kode", text: "Quack! Os irregulares não têm padrão! Podem mudar tudo ('go' -> 'went') ou não mudar nada ('cut' -> 'cut', 'put' -> 'put')." },
+        { char: "Kode.png", name: "Kode", text: "O verbo 'read' escreve igual, mas a pronúncia muda de /rid/ para /réd/ no passado!" },
+        { char: "Yuyu.png", name: "Yuyu", text: "Miau! Regra de ouro: no passado (exceto o to be), o verbo é IGUAL para todas as pessoas (I, You, He...). Por isso NUNCA oculte o sujeito!" },
+        { char: "Yuyu.png", name: "Yuyu", text: "Preparado(a)? Temos 20 desafios para testar se você prestou atenção. Vamos lá!" }
     ];
 
     let currentDialogueIndex = 0;
@@ -180,33 +226,28 @@
         document.getElementById('dialogue-text').innerText = d.text;
     }
 
-    // --- PARTE 2: PRÁTICA / QUIZ (Baseada nos exercícios do material) ---
+    // --- PARTE 2: QUIZ COM 20 QUESTÕES (Baseado nas fontes) ---
     const questions = [
-        {
-            question: "Qual é a forma correta no simple past do verbo 'to stop'?",
-            options: ["stoped", "stopped", "stopt"],
-            correct: 1
-        },
-        {
-            question: "O verbo 'to study' termina em consoante + y. Como ele fica no passado?",
-            options: ["studied", "studyed", "studid"],
-            correct: 0
-        },
-        {
-            question: "Os verbos irregulares não seguem a regra do '-ed'. Qual o passado do verbo 'to go'?",
-            options: ["goed", "went", "gone"],
-            correct: 1
-        },
-        {
-            question: "Qual frase está correta sabendo que a forma verbal é igual para todas as pessoas no passado?",
-            options: ["He cutted the paper.", "He cuts the paper yesterday.", "He cut the paper."],
-            correct: 2
-        },
-        {
-            question: "Por que em inglês não podemos montar frases no passado sem o sujeito (ex: 'went home')?",
-            options: ["Porque os ingleses são formais.", "Porque a forma do verbo no passado é igual para todos, impossibilitando saber quem realizou a ação.", "Porque os verbos irregulares exigem sujeito, mas os regulares não."],
-            correct: 1
-        }
+        { question: "1. Qual é a principal função do 'Simple Past'?", options: ["Ações que ainda estão acontecendo.", "Ações que começaram e terminaram no passado.", "Ações que vão acontecer no futuro."], correct: 1 },
+        { question: "2. Qual é a forma correta do verbo 'to be' no passado para os pronomes He, She e It?", options: ["were", "was", "is"], correct: 1 },
+        { question: "3. Qual é a forma correta do verbo 'to be' no passado para os pronomes You, We e They?", options: ["was", "are", "were"], correct: 2 },
+        { question: "4. Qual é a regra geral para formar o passado dos verbos regulares?", options: ["Adicionar '-ed' ao final do verbo.", "Mudar completamente a palavra.", "Adicionar '-ing' ao final do verbo."], correct: 0 },
+        { question: "5. O verbo 'to love' já termina em 'e'. Como ele fica no passado?", options: ["loveed", "loved", "lovet"], correct: 1 },
+        { question: "6. O verbo 'to play' termina em vogal + y. Qual é o seu passado?", options: ["played", "plaied", "playd"], correct: 0 },
+        { question: "7. O verbo 'to study' termina em consoante + y. Como ele fica no passado?", options: ["studyed", "studied", "studid"], correct: 1 },
+        { question: "8. O verbo 'to stop' é monossílabo e termina em Consoante-Vogal-Consoante. Como ele fica?", options: ["stoped", "stopped", "stopt"], correct: 1 },
+        { question: "9. O verbo 'to fix' termina em X. Qual é a regra para ele no passado?", options: ["Dobra o X e adiciona -ed (fixxed).", "Apenas adiciona -ed, pois o X nunca é dobrado (fixed).", "Muda o X para C e adiciona -ed (ficced)."], correct: 1 },
+        { question: "10. 'Listen' é uma palavra paroxítona (sílaba mais forte no começo). Qual é o seu passado?", options: ["listenned", "listened", "listend"], correct: 1 },
+        { question: "11. 'Permit' é oxítona (sílaba mais forte no final) e termina em C-V-C. Como fica?", options: ["permited", "permitted", "permittid"], correct: 1 },
+        { question: "12. Qual destas afirmações sobre verbos irregulares é verdadeira?", options: ["Eles sempre terminam em -ied.", "Eles seguem o mesmo padrão dos verbos terminados em -e.", "Eles não apresentam padrão estrutural na formação."], correct: 2 },
+        { question: "13. Qual é o passado do verbo irregular 'to go' (ir)?", options: ["goed", "went", "gone"], correct: 1 },
+        { question: "14. Qual é o passado do verbo irregular 'to buy' (comprar)?", options: ["buyed", "bought", "boughted"], correct: 1 },
+        { question: "15. Como fica o passado do verbo 'to cut' (cortar)?", options: ["cutted", "cat", "cut"], correct: 2 },
+        { question: "16. O verbo 'to read' se escreve da mesma forma no passado (read). O que muda nele?", options: ["Apenas o significado.", "A pronúncia (de /rid/ passa para /réd/).", "Nada muda."], correct: 1 },
+        { question: "17. 'Sell' vira 'sold' e 'tell' vira 'told'. O verbo 'to yell' (gritar) vira 'yold'?", options: ["Sim, pois todos os verbos com essa terminação são irregulares.", "Não, 'yell' é um verbo regular e vira 'yelled'."], correct: 1 },
+        { question: "18. Excluindo o verbo 'to be', como os verbos ficam para as diferentes pessoas (I, You, He...) no passado?", options: ["A forma é a MESMA para todas as pessoas.", "Adiciona-se 's' para He/She/It.", "A forma muda para I e You."], correct: 0 },
+        { question: "19. Por que não podemos omitir o sujeito nas frases em inglês (ex: 'did the homework')?", options: ["Porque é uma gíria informal.", "Porque a forma verbal é igual para todos, sendo impossível saber quem realizou a ação.", "Porque o verbo 'did' não existe."], correct: 1 },
+        { question: "20. Complete com o passado de 'to find': 'I _______ my lost book.'", options: ["finded", "found", "founded"], correct: 1 }
     ];
 
     let currentQuestionIndex = 0;
@@ -220,7 +261,10 @@
 
     function loadQuestion() {
         const q = questions[currentQuestionIndex];
+        document.getElementById('question-counter').innerText = `Questão ${currentQuestionIndex + 1} de ${questions.length}`;
+        document.getElementById('current-score').innerText = score;
         document.getElementById('question-text').innerText = q.question;
+        
         const optionsContainer = document.getElementById('options');
         optionsContainer.innerHTML = "";
         
@@ -228,26 +272,35 @@
             const btn = document.createElement('button');
             btn.className = 'option-btn';
             btn.innerText = opt;
-            btn.onclick = () => checkAnswer(index);
+            btn.onclick = () => checkAnswer(index, btn);
             optionsContainer.appendChild(btn);
         });
     }
 
-    function checkAnswer(selectedIndex) {
+    function checkAnswer(selectedIndex, btnElement) {
+        // Desativar botões para não clicar duas vezes
+        const buttons = document.querySelectorAll('.option-btn');
+        buttons.forEach(b => b.disabled = true);
+
         const q = questions[currentQuestionIndex];
         if (selectedIndex === q.correct) {
             score++;
-            alert("Correto!");
+            btnElement.style.background = "#27ae60"; // Verde se acertar
         } else {
-            alert(`Incorreto! A resposta certa seria: ${q.options[q.correct]}`);
+            btnElement.style.background = "#e74c3c"; // Vermelho se errar
+            buttons[q.correct].style.background = "#27ae60"; // Mostra o verde correto
         }
         
-        currentQuestionIndex++;
-        if (currentQuestionIndex < questions.length) {
-            loadQuestion();
-        } else {
-            showResult();
-        }
+        document.getElementById('current-score').innerText = score;
+
+        setTimeout(() => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                loadQuestion();
+            } else {
+                showResult();
+            }
+        }, 1500); // Espera 1.5s para a pessoa ver se acertou ou errou
     }
 
     function showResult() {
@@ -256,10 +309,33 @@
         document.getElementById('final-score').innerText = `Sua pontuação: ${score} / ${questions.length}`;
     }
 
-    // Iniciar o jogo na primeira tela
+    // --- PARTE 3: FUNÇÕES DE ENVIO DO RESULTADO ---
+    function sendWhatsApp() {
+        const contact = document.getElementById('contact-info').value.replace(/\D/g, ''); // Remove não-números
+        if(!contact || contact.length < 10) { 
+            alert("Por favor, insira um número de telefone com DDD válido."); 
+            return; 
+        }
+        const message = `Olá! Acabei de concluir a revisão 'Aventuras no Simple Past' e minha pontuação final foi ${score} acertos de ${questions.length} questões!`;
+        const url = `https://wa.me/${contact}?text=${encodeURIComponent(message)}`;
+        window.open(url, '_blank');
+    }
+
+    function sendEmail() {
+        const email = document.getElementById('contact-info').value;
+        if(!email || !email.includes('@')) { 
+            alert("Por favor, insira um endereço de e-mail válido."); 
+            return; 
+        }
+        const subject = "Resultado: Revisão Simple Past";
+        const body = `Olá!\n\nAcabei de concluir o jogo de revisão gramatical 'Aventuras no Simple Past'.\n\nMinha pontuação final foi: ${score} acertos de ${questions.length} questões.\n\nAté logo!`;
+        const url = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        window.location.href = url;
+    }
+
+    // Inicia a primeira tela
     updateTheoryScreen();
 </script>
 
 </body>
 </html>
-```
