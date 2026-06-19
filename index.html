@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aventuras no Simple Past</title>
+    <style>
+        :root {
+            --primary: #4A90E2;
+            --bg-color: #f0f8ff;
+            --box-bg: #ffffff;
+            --text-color: #333;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #game-container {
+            width: 800px;
+            height: 500px;
+            background: var(--box-bg);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        /* Telas */
+        .screen {
+            display: none;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+        }
+        /* Tela de Teoria (Visual Novel) */
+        #theory-screen {
+            justify-content: flex-end;
+            position: relative;
+        }
+        .character-img {
+            position: absolute;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            height: 350px;
+            transition: all 0.3s ease;
+        }
+        .dialogue-box {
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            min-height: 100px;
+            position: relative;
+            z-index: 10;
+        }
+        .speaker-name {
+            font-weight: bold;
+            color: #FFD700;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        .next-btn {
+            position: absolute;
+            bottom: 15px;
+            right: 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .next-btn:hover { background: #357ABD; }
+        
+        /* Tela de Quiz */
+        #quiz-screen {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+            width: 80%;
+        }
+        .option-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .option-btn:hover { background: #357ABD; }
+        .score-display {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #27ae60;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <!-- Tela Inicial e de Teoria -->
+    <div id="theory-screen" class="screen active">
+        <img id="char-image" class="character-img" src="Batata.png" alt="Personagem">
+        <div class="dialogue-box">
+            <div id="speaker" class="speaker-name">Batata</div>
+            <div id="dialogue-text">Olá! Vamos aprender sobre o Simple Past?</div>
+            <button class="next-btn" onclick="nextDialogue()">Próximo ></button>
+        </div>
+    </div>
+
+    <!-- Tela do Quiz -->
+    <div id="quiz-screen" class="screen">
+        <h2 id="question-text">Pergunta vai aqui</h2>
+        <div class="options-container" id="options">
+            <!-- Botões gerados via JS -->
+        </div>
+    </div>
+
+    <!-- Tela de Resultado -->
+    <div id="result-screen" class="screen">
+        <h2>Revisão Concluída!</h2>
+        <img src="Yuyu.png" style="height: 200px; margin: 0 auto;">
+        <p class="score-display" id="final-score">Sua pontuação: 0/0</p>
+        <button class="option-btn" style="margin-top:20px; width:50%; align-self:center;" onclick="location.reload()">Jogar Novamente</button>
+    </div>
+</div>
+
+<script>
+    // --- PARTE 1: TEORIA (Baseada nas Fontes) ---
+    const dialogues = [
+        { char: "Batata.png", name: "Batata", text: "Olá! O Simple Past é usado para acontecimentos passados, ou seja, ações que começaram e terminaram no passado." },
+        { char: "Batata.png", name: "Batata", text: "Antes de ir para as ações, lembre-se do verbo 'to be'. No presente ele é am/is/are, mas no passado ele vira apenas 'was' (I, he, she, it) ou 'were' (you, we, they)." },
+        { char: "Doci.png", name: "Doci", text: "Agora, sobre os verbos de ação regulares! Eles são chamados assim porque seguem um padrão fixo de escrita no passado." },
+        { char: "Doci.png", name: "Doci", text: "A regra geral é acrescentar '-ed' no final. Por exemplo, 'to watch' vira 'watched'. Se já terminar em 'e', basta colocar o '-d', como em 'loved'." },
+        { char: "Doci.png", name: "Doci", text: "Atenção ao 'y'! Se tiver uma consoante antes, trocamos o 'y' por '-ied' (study -> studied). Se for vogal antes, fica só '-ed' (play -> played)." },
+        { char: "Doci.png", name: "Doci", text: "E os verbos curtos (C-V-C)? Se o verbo terminar em Consoante-Vogal-Consoante, dobramos a última letra! 'stop' vira 'stopped'. Exceto se terminar em 'x', aí não dobra ('fixed')." },
+        { char: "Kode.png", name: "Kode", text: "Quack! Mas e os irregulares? Eles não têm padrão estrutural! Podem mudar de forma inteiramente ('go' -> 'went')." },
+        { char: "Kode.png", name: "Kode", text: "Alguns não mudam absolutamente nada, como 'cut' ou 'put', que ficam iguais no presente e no passado. E 'read' escreve igual, mas a pronúncia muda de /rid/ para /réd/!" },
+        { char: "Yuyu.png", name: "Yuyu", text: "Miau! A regra de ouro: no passado, a forma do verbo é a MESMA para todas as pessoas (I, You, He, We, They usam todos a mesma forma)!" },
+        { char: "Yuyu.png", name: "Yuyu", text: "Por isso, em inglês, você NUNCA pode ocultar o sujeito. Se falar apenas 'did the homework', ninguém sabe quem fez. Sempre use o sujeito! Vamos praticar?" }
+    ];
+
+    let currentDialogueIndex = 0;
+
+    function nextDialogue() {
+        currentDialogueIndex++;
+        if (currentDialogueIndex < dialogues.length) {
+            updateTheoryScreen();
+        } else {
+            startQuiz();
+        }
+    }
+
+    function updateTheoryScreen() {
+        const d = dialogues[currentDialogueIndex];
+        document.getElementById('char-image').src = d.char;
+        document.getElementById('speaker').innerText = d.name;
+        document.getElementById('dialogue-text').innerText = d.text;
+    }
+
+    // --- PARTE 2: PRÁTICA / QUIZ (Baseada nos exercícios do material) ---
+    const questions = [
+        {
+            question: "Qual é a forma correta no simple past do verbo 'to stop'?",
+            options: ["stoped", "stopped", "stopt"],
+            correct: 1
+        },
+        {
+            question: "O verbo 'to study' termina em consoante + y. Como ele fica no passado?",
+            options: ["studied", "studyed", "studid"],
+            correct: 0
+        },
+        {
+            question: "Os verbos irregulares não seguem a regra do '-ed'. Qual o passado do verbo 'to go'?",
+            options: ["goed", "went", "gone"],
+            correct: 1
+        },
+        {
+            question: "Qual frase está correta sabendo que a forma verbal é igual para todas as pessoas no passado?",
+            options: ["He cutted the paper.", "He cuts the paper yesterday.", "He cut the paper."],
+            correct: 2
+        },
+        {
+            question: "Por que em inglês não podemos montar frases no passado sem o sujeito (ex: 'went home')?",
+            options: ["Porque os ingleses são formais.", "Porque a forma do verbo no passado é igual para todos, impossibilitando saber quem realizou a ação.", "Porque os verbos irregulares exigem sujeito, mas os regulares não."],
+            correct: 1
+        }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+
+    function startQuiz() {
+        document.getElementById('theory-screen').classList.remove('active');
+        document.getElementById('quiz-screen').classList.add('active');
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        const q = questions[currentQuestionIndex];
+        document.getElementById('question-text').innerText = q.question;
+        const optionsContainer = document.getElementById('options');
+        optionsContainer.innerHTML = "";
+        
+        q.options.forEach((opt, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = opt;
+            btn.onclick = () => checkAnswer(index);
+            optionsContainer.appendChild(btn);
+        });
+    }
+
+    function checkAnswer(selectedIndex) {
+        const q = questions[currentQuestionIndex];
+        if (selectedIndex === q.correct) {
+            score++;
+            alert("Correto!");
+        } else {
+            alert(`Incorreto! A resposta certa seria: ${q.options[q.correct]}`);
+        }
+        
+        currentQuestionIndex++;
+        if (currentQuestionIndex < questions.length) {
+            loadQuestion();
+        } else {
+            showResult();
+        }
+    }
+
+    function showResult() {
+        document.getElementById('quiz-screen').classList.remove('active');
+        document.getElementById('result-screen').classList.add('active');
+        document.getElementById('final-score').innerText = `Sua pontuação: ${score} / ${questions.length}`;
+    }
+
+    // Iniciar o jogo na primeira tela
+    updateTheoryScreen();
+</script>
+
+</body>
+</html>
+```
